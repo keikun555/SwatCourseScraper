@@ -68,22 +68,32 @@ def parse_course_page(url):
         if len(row.strip()) > 0:
             # if there is anything in the row
             course = ' '.join(row.split()[:2]).replace('.', '')
-            course_list.append((course, row))
+            course_list.append({'course': course, 'text': row})
     return course_list
 
 
-def parse_courses(args):
+def parse_course_text(cdict):
+    ''' given course dictionary, parses text '''
+    text = cdict['text'].split('\n')
+    cdict['prereq'] = ''
+    for line in text:
+        if line[:13] == 'Prerequisite:':
+            cdict['prereq'] = line[14:].strip()
+    return cdict
+
+
+def parse_courses(num_threads=None):
     ''' parses all the courses and writes to file '''
-    pool = multi.Pool(args.threads)
+    pool = multi.Pool(num_threads)
     num_pages = get_num_pages()
     vprint(num_pages, 'pages to parse')
     url_list = [URL.format(page_number=i+1) for i in range(num_pages)]
-    courses = chain.from_iterable(pool.map(parse_course_page, url_list))
+    courses = list(chain.from_iterable(pool.map(parse_course_page, url_list)))
     vprint(num_pages, 'pages parsed')
-    course_list = [{'course': c, 'text': d} for c, d in courses]
-    vprint('there are', len(course_list), 'courses')
-    args.out.write(json.dumps(course_list, separators=(',', ':')))
-    vprint(len(course_list), 'courses written to', args.out.name)
+    parsed_courses = pool.map(parse_course_text, courses)
+    vprint(len(parsed_courses), 'course texts parsed')
+    pool.close()
+    return parsed_courses
 
 
 def main():
@@ -100,7 +110,9 @@ def main():
 
     args = parser.parse_args()
     VERBOSE = args.verbose
-    parse_courses(args)
+    parsed_courses = parse_courses(num_threads=args.threads)
+    args.out.write(json.dumps(parsed_courses, separators=(',', ':')))
+    vprint(len(parsed_courses), 'courses written to', args.out.name)
     args.out.close()
 
 
