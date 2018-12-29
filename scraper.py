@@ -73,8 +73,16 @@ def parse_course_page(url):
 
 
 def parse_course_text(cdict):
-    ''' given course dictionary, parses text '''
+    '''
+    given course dictionary, fills in other elements
+
+    cdict: dictionary - {
+        'course': string the course name e.g. 'ANTH 093'
+        'text': string the course description
+    }
+    '''
     text = cdict['text'].split('\n')
+    cdict['department'] = cdict['course'].split()[0]
     cdict['prereq'] = ''
     for line in text:
         if line[:13] == 'Prerequisite:':
