@@ -88,7 +88,8 @@ def parse_course_dict(cdict):
     cdict['prereq'] = ''
     for line in text:
         if line[:13] == 'Prerequisite:':
-            cdict['prereq'] = line[14:].strip()
+            cdict['prereq'] += ' ' + line[14:].strip()
+    cdict['prereq'] = cdict['prereq'].strip()
     return cdict
 
 
@@ -111,7 +112,10 @@ def parse_courses(num_threads=None):
         '1 credit.\nFall 2018. Goldwyn.\nFall 2019. Staff.\nCatalog chapter: '
         'Mathematics and Statistics\nDepartment website: '
         'http://www.swarthmore.edu/mathematics-statistics'})
-    # ^ that darn exception
+    courses.append({
+        'course': 'MATH 028S',
+        'text': 'Prerequisite: Placement by examination'})
+    # ^ that darn exceptions
     parsed_courses = pool.map(parse_course_dict, courses)
     vprint(len(parsed_courses), 'course texts parsed')
     pool.close()
