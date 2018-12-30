@@ -24,6 +24,8 @@ URL = 'http://catalog.swarthmore.edu/content.php?filter%5B27%5D=\
 
 
 VERBOSE = False  # verbose flag
+# compiled regex to match courses
+creg = re.compile('[A-Z]{4} \d{3}[A-Z]*( [A-Z]+)*')
 
 
 def vprint(*args, **kwargs):
@@ -67,7 +69,7 @@ def parse_course_page(url):
         row = ' '.join(filter(None, re.split(' ', row)))
         if len(row.strip()) > 0:
             # if there is anything in the row
-            course = ' '.join(row.split()[:2]).replace('.', '')
+            course = row[:row.index('.')]
             course_list.append({'course': course, 'text': row})
     return course_list
 
