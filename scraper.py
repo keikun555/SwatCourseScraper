@@ -72,7 +72,7 @@ def parse_course_page(url):
     return course_list
 
 
-def parse_course_text(cdict):
+def parse_course_dict(cdict):
     '''
     given course dictionary, fills in other elements
 
@@ -98,7 +98,7 @@ def parse_courses(num_threads=None):
     url_list = [URL.format(page_number=i+1) for i in range(num_pages)]
     courses = list(chain.from_iterable(pool.map(parse_course_page, url_list)))
     vprint(num_pages, 'pages parsed')
-    parsed_courses = pool.map(parse_course_text, courses)
+    parsed_courses = pool.map(parse_course_dict, courses)
     vprint(len(parsed_courses), 'course texts parsed')
     pool.close()
     return parsed_courses
