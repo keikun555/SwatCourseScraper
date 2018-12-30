@@ -64,8 +64,10 @@ def parse_course_page(url):
     course_list = []
     for i, r in enumerate(rows):
         # get rid of extra newlines and spaces
-        row = unescape('\n'.join(filter(None,
-                       re.split('\n', r.text.strip())[:-2])))
+        # -2 to get rid of annoying college bulletin urls
+        row = list(map(lambda r: r.strip(),
+                       re.split('\n', r.text.strip())))[:-2]
+        row = unescape('\n'.join(filter(None, row)))
         row = ' '.join(filter(None, re.split(' ', row)))
         if len(row.strip()) > 0:
             # if there is anything in the row
