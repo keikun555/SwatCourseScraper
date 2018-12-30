@@ -25,7 +25,7 @@ URL = 'http://catalog.swarthmore.edu/content.php?filter%5B27%5D=\
 
 VERBOSE = False  # verbose flag
 # compiled regex to match courses
-creg = re.compile('[A-Z]{4} \d{3}[A-Z]*( [A-Z]+)*')
+creg = re.compile('[A-Z]{4} \d{3}[A-Z]*(?: [A-Z]+)?')
 
 
 def vprint(*args, **kwargs):
@@ -100,6 +100,18 @@ def parse_courses(num_threads=None):
     url_list = [URL.format(page_number=i+1) for i in range(num_pages)]
     courses = list(chain.from_iterable(pool.map(parse_course_page, url_list)))
     vprint(num_pages, 'pages parsed')
+    courses.append({
+        'course': 'MATH 026',
+        'text': 'For students who place out of the first half of MATH 025. '
+        'This course goes into more depth on sequences, series, and '
+        'differential equations than does MATH 025. Students may not take '
+        'MATH 026 for credit after MATH 025 without special permission.\n'
+        'Prerequisite: Placement by examination (see "Advanced Placement and '
+        'Credit Policy" section).\nNatural sciences and engineering.\n'
+        '1 credit.\nFall 2018. Goldwyn.\nFall 2019. Staff.\nCatalog chapter: '
+        'Mathematics and Statistics\nDepartment website: '
+        'http://www.swarthmore.edu/mathematics-statistics'})
+    # ^ that darn exception
     parsed_courses = pool.map(parse_course_dict, courses)
     vprint(len(parsed_courses), 'course texts parsed')
     pool.close()
