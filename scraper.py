@@ -78,7 +78,7 @@ def parse_course_dict(cdict):
     '''
     given course dictionary, fills in other elements
 
-    cdict: dictionary - {
+    cdict: dictionary {
         'course': string the course name e.g. 'ANTH 093'
         'text': string the course description
     }
