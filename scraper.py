@@ -16,7 +16,7 @@ from itertools import chain
 import multiprocessing as multi
 
 
-URL = 'http://catalog.swarthmore.edu/content.php?filter%5B27%5D=\
+BASEURL = 'http://catalog.swarthmore.edu/content.php?filter%5B27%5D=\
 -1&filter%5B29%5D=&filter%5Bcourse_type%5D=-1&filter%5Bkeyword%5D=\
 &filter%5B32%5D=1&filter%5Bcpage%5D={page_number}&cur_cat_oid=7&expand=\
 1&navoid=191&print=1&filter%5Bexact_match%5D=\
@@ -49,7 +49,7 @@ def get_course_rows(soup):
 
 def get_num_pages():
     ''' returns number of pages to parse '''
-    req = requests.get(URL.format(page_number=1))
+    req = requests.get(BASEURL.format(page_number=1))
     soup = bs4.BeautifulSoup(req.text, 'lxml')
     table = get_table(soup)
     rows = table.findChildren('tr', recursive=False)[-1]
@@ -100,7 +100,7 @@ def parse_courses(num_threads=None):
     pool = multi.Pool(num_threads)
     num_pages = get_num_pages()
     vprint(num_pages, 'pages to parse')
-    url_list = [URL.format(page_number=i+1) for i in range(num_pages)]
+    url_list = [BASEURL.format(page_number=i+1) for i in range(num_pages)]
     courses = list(chain.from_iterable(pool.map(parse_course_page, url_list)))
     vprint(num_pages, 'pages parsed')
     courses.append({
@@ -117,7 +117,7 @@ def parse_courses(num_threads=None):
     courses.append({
         'course': 'MATH 028S',
         'text': 'Prerequisite: Placement by examination'})
-    # ^ that darn exceptions
+    # ^ those darn exceptions
     parsed_courses = pool.map(parse_course_dict, courses)
     vprint(len(parsed_courses), 'course texts parsed')
     pool.close()
