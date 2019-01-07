@@ -1,2 +1,2 @@
-# swat_course_scraper
-Scrapes course descriptions
+# SwatCourseScraper
+Scrapes Swarthmore college course descriptions from their website
